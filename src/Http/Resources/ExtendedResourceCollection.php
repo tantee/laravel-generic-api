@@ -17,19 +17,23 @@ class ExtendedResourceCollection extends ResourceCollection
         return parent::toArray($request);
     }
 
-    public function __construct($resource,$success=true,$errors=[]) {
-        if (!\method_exists($resource,'toArray')) $resource = collect($resource);
+    public function __construct($resource, $success = true, $errors = [])
+    {
+        if (! \method_exists($resource, 'toArray')) {
+            $resource = collect($resource);
+        }
         parent::__construct($resource);
 
         $this->additional([
           'success' => $success,
-          'errorTexts' => $errors
+          'errorTexts' => $errors,
         ]);
     }
 
-    public function additional($data) {
-      $this->additional = array_merge($this->additional,$data);
+    public function additional($data)
+    {
+        $this->additional = array_merge($this->additional, $data);
 
-      return $this;
+        return $this;
     }
 }
