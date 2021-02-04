@@ -27,8 +27,7 @@
     },
     "autoload": {
         "psr-4": {
-            "TaNteE\\LaravelGenericApi\\": "src",
-            "TaNteE\\LaravelGenericApi\\Database\\Factories\\": "database/factories"
+            "TaNteE\\LaravelGenericApi\\": "src"
         }
     },
     "autoload-dev": {

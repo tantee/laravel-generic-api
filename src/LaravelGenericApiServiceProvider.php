@@ -15,11 +15,6 @@ class LaravelGenericApiServiceProvider extends PackageServiceProvider
          *
          * More info: https://github.com/spatie/laravel-package-tools
          */
-        $package
-            ->name('laravel-generic-api')
-            ->hasConfigFile()
-            ->hasViews()
-            ->hasMigration('create_laravel_generic_api_table')
-            ->hasCommand(LaravelGenericApiCommand::class);
+        $package->name('laravel-generic-api');
     }
 }
