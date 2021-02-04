@@ -1,16 +1,16 @@
 {
-    "name": ":vendor_name/:package_name",
-    "description": ":package_description",
+    "name": "tantee/laravel-generic-api",
+    "description": "Expose controllers as RESTful API",
     "keywords": [
-        ":vendor_name",
-        ":package_name"
+        "tantee",
+        "laravel-generic-api"
     ],
-    "homepage": "https://github.com/:vendor_name/:package_name",
+    "homepage": "https://github.com/tantee/laravel-generic-api",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": ":author_email",
+            "name": "TaNteE",
+            "email": "poompis@yahoo.com",
             "role": "Developer"
         }
     ],
@@ -27,13 +27,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Spatie\\Skeleton\\": "src",
-            "Spatie\\Skeleton\\Database\\Factories\\": "database/factories"
+            "TaNteE\\LaravelGenericApi\\": "src",
+            "TaNteE\\LaravelGenericApi\\Database\\Factories\\": "database/factories"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Spatie\\Skeleton\\Tests\\": "tests"
+            "TaNteE\\LaravelGenericApi\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -47,10 +47,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Spatie\\Skeleton\\SkeletonServiceProvider"
+                "TaNteE\\LaravelGenericApi\\LaravelGenericApiServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "Spatie\\Skeleton\\SkeletonFacade"
+                "LaravelGenericApi": "TaNteE\\LaravelGenericApi\\LaravelGenericApiFacade"
             }
         }
     },

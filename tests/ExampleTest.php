@@ -1,6 +1,6 @@
 <?php
 
-namespace Spatie\Skeleton\Tests;
+namespace TaNteE\LaravelGenericApi\Tests;
 
 class ExampleTest extends TestCase
 {

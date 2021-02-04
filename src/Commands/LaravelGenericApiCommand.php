@@ -1,12 +1,12 @@
 <?php
 
-namespace Spatie\Skeleton\Commands;
+namespace TaNteE\LaravelGenericApi\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class LaravelGenericApiCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'laravel-generic-api';
 
     public $description = 'My command';
 
