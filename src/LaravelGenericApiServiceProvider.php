@@ -4,7 +4,6 @@ namespace TaNteE\LaravelGenericApi;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use TaNteE\LaravelGenericApi\Commands\LaravelGenericApiCommand;
 
 class LaravelGenericApiServiceProvider extends PackageServiceProvider
 {
