@@ -19,7 +19,7 @@ class ExtendedResourceCollection extends ResourceCollection
 
     public function __construct($resource, $success = true, $errors = [])
     {
-        if (! \method_exists($resource, 'toArray')) {
+        if (! ((is_string($resource) || is_object($resource)) && \method_exists($resource, 'toArray'))) {
             $resource = collect($resource);
         }
         parent::__construct($resource);

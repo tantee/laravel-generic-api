@@ -19,7 +19,7 @@ class ExtendedResource extends JsonResource
 
     public function __construct($resource, $success = true, $errors = [], $preventFaultUnnesting = false)
     {
-        if (! is_array($resource) && ! method_exists($resource, 'toArray')) {
+        if (! is_array($resource) && ! ((is_string($resource) || is_object($resource)) && \method_exists($resource, 'toArray'))) {
             $resource = [$resource];
         }
         if ($preventFaultUnnesting) {
