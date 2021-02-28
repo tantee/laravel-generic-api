@@ -18,7 +18,7 @@ class GenericApiController extends Controller
             $callParameters = [];
 
             foreach ($parameters as $parameter) {
-                if ($parameter->getClass() != null && $parameter->getClass()->name == "Illuminate\\Http\\Request") {
+                if ($parameter->getType() && $parameter->getType()->getName() == "Illuminate\\Http\\Request") {
                     array_push($callParameters, $request);
                 } else {
                     if (isset($customParameters[$parameter->name])) {
