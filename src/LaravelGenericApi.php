@@ -33,13 +33,13 @@ class LaravelGenericApi
         }
     }
 
-    public static function routes($prefix=null,$middleware=null)
+    public static function routes($prefix = null, $middleware = null)
     {
-        Route::group(["prefix"=>$prefix,"middleware"=>$middleware],function () {
-          Route::get('{methodNamespace}/{methodClass}/{methodName}', [GenericApiController::class,'route']);
-          Route::post('{methodNamespace}/{methodClass}/{methodName}', [GenericApiController::class,'route']);
-          Route::get('direct/{methodNamespace}/{methodClass}/{methodName}', [GenericApiController::class,'routeDirect']);
-          Route::post('direct/{methodNamespace}/{methodClass}/{methodName}', [GenericApiController::class,'routeDirect']);
+        Route::group(["prefix" => $prefix,"middleware" => $middleware], function () {
+            Route::get('{methodNamespace}/{methodClass}/{methodName}', [GenericApiController::class,'route']);
+            Route::post('{methodNamespace}/{methodClass}/{methodName}', [GenericApiController::class,'route']);
+            Route::get('direct/{methodNamespace}/{methodClass}/{methodName}', [GenericApiController::class,'routeDirect']);
+            Route::post('direct/{methodNamespace}/{methodClass}/{methodName}', [GenericApiController::class,'routeDirect']);
         });
     }
 }
