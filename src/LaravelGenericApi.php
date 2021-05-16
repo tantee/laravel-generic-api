@@ -5,6 +5,7 @@ namespace TaNteE\LaravelGenericApi;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
 use TaNteE\LaravelGenericApi\Http\Controllers\ApiController;
+use TaNteE\LaravelGenericApi\Http\Controllers\GenericApiController;
 use TaNteE\LaravelGenericApi\Http\Resources\ExtendedResource;
 use TaNteE\LaravelGenericApi\Http\Resources\ExtendedResourceCollection;
 
