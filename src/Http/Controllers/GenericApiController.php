@@ -5,7 +5,7 @@ namespace TaNteE\LaravelGenericApi\Http\Controllers;
 use Illuminate\Http\Request;
 use TaNteE\LaravelGenericApi\LaravelGenericApi;
 
-class GenericApiController extends Controller
+class GenericAPIController extends Controller
 {
     public static function route(Request $request, $methodNamespace, $methodClass, $methodName, $customParameters = [], $directReturn = false)
     {
