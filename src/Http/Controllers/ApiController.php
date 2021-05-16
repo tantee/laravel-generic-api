@@ -3,6 +3,7 @@
 namespace TaNteE\LaravelGenericApi\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -75,8 +76,8 @@ class ApiController extends Controller
           } else {
             $ApiData = json_decode((String)$res->getBody(),true);
             if ($ApiData != null) {
-              $success = array_pull($ApiData,'success',$success);
-              $errorTexts = array_pull($ApiData,'errorTexts',$errorTexts);
+              $success = Arr::pull($ApiData,'success',$success);
+              $errorTexts = Arr::pull($ApiData,'errorTexts',$errorTexts);
             }
 
             if ($isMaskError) {
@@ -215,8 +216,8 @@ class ApiController extends Controller
           } else {
             $ApiData = json_decode((String)$res->getBody(),true);
             if ($ApiData != null) {
-              $success = array_pull($ApiData,'success',$success);
-              $errorTexts = array_pull($ApiData,'errorTexts',$errorTexts);
+              $success = Arr::pull($ApiData,'success',$success);
+              $errorTexts = Arr::pull($ApiData,'errorTexts',$errorTexts);
             }
 
             try {
