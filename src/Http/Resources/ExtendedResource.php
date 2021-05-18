@@ -26,7 +26,7 @@ class ExtendedResource extends JsonResource
             if (! is_array($resource)) {
                 $resource = $resource->toArray();
             }
-            if (array_key_exists('data', $resource)) {
+            if (isset($resource['data'])) {
                 $resource = ['data' => $resource];
             }
         }
