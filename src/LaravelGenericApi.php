@@ -46,4 +46,21 @@ class LaravelGenericApi
 
         Route::get('version',[ApiController::class,'version']);
     }
+
+    public static function routesWrapper($prefix = 'wrapper', $middleware = null) {
+      Route::prefix($prefix)->middleware(Arr::wrap($middleware))->group(function () {
+        try {
+          $apis = \TaNteE\LaravelGenericApi\Models\Apis::all();
+          foreach($apis as $api) {
+            Route::match([$api->apiMethod],ltrim($api->apiRoute,'/'),function(Request $request) use ($api) {
+              $args = func_get_args();
+              array_shift($args);
+              $apiMethod = (!empty($api->sourceApiMethod)) ? $api->sourceApiMethod : $api->ApiMethod;
+              return \TaNteE\LaravelGenericApi\Http\Controllers\ApiController::RemoteApiRequest($request,$api->name,$apiMethod,$api->sourceApiUrl,$api->ETLCode,$api->ETLCodeError,$api->isFlatten,$api->isMaskError,$args);
+            });
+          };
+        } catch (\Exception $e) {
+        }
+      });
+    }
 }
