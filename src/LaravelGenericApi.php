@@ -50,7 +50,7 @@ class LaravelGenericApi
     public static function routesWrapper($prefix = 'wrapper', $middleware = null) {
       Route::prefix($prefix)->middleware(Arr::wrap($middleware))->group(function () {
         try {
-          $apis = \TaNteE\LaravelGenericApi\Models\Apis::all();
+          $apis = config('generic-api.api-model')::all();
           foreach($apis as $api) {
             Route::match([$api->apiMethod],ltrim($api->apiRoute,'/'),function(Request $request) use ($api) {
               $args = func_get_args();

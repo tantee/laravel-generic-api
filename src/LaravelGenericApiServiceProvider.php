@@ -16,6 +16,7 @@ class LaravelGenericApiServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('laravel-generic-api')
+            ->hasConfigFile()
             ->hasMigration('create_apis_table');
     }
 }

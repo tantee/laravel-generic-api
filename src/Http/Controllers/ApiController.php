@@ -163,7 +163,7 @@ class ApiController extends Controller
         return Cache::get($cacheKey);
       }
 
-      $api = \App\Models\Api\Apis::where('name',$ApiName)->first();
+      $api = config('generic-api.api-model')::where('name',$ApiName)->first();
       if ($api == null) {
         $success = false;
         array_push($errorTexts,['errorText'=>"API Not Found",'errorType'=>2]);
@@ -310,7 +310,7 @@ class ApiController extends Controller
         return Cache::get($cacheKey);
       }
 
-      $api = \App\Models\Api\Apis::where('name',$ApiName)->first();
+      $api = config('generic-api.api-model')::where('name',$ApiName)->first();
       if ($api == null) {
         $success = false;
         array_push($errorTexts,['errorText'=>"API Not Found",'errorType'=>2]);
