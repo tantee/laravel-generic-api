@@ -2,6 +2,7 @@
 
 namespace TaNteE\LaravelGenericApi;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
 use TaNteE\LaravelGenericApi\Http\Controllers\ApiController;
