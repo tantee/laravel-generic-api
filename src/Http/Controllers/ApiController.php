@@ -15,15 +15,15 @@ use TaNteE\LaravelGenericApi\Http\Resources\ExtendedResourceCollection;
 
 class ApiController extends Controller
 {
-    public static function RemoteApiRequest(Request $request,$ApiName,$ApiMethod,$ApiUrl,$ETLCode,$ETLCodeError,$isFlatten,$isMaskError,$args) {
+    public static function RemoteApiRequest(Request $request,$ApiName,$ApiMethod,$ApiUrl,$ETLCode,$ETLCodeError,$isFlatten,$isMaskError,$args,$overrides=null) {
       if ($ApiMethod=="GET" || $ApiMethod=="POST" || $ApiMethod=="PUT" || $ApiMethod=="PATCH") {
-        return self::RemoteRESTApiRequest($request,$ApiName,$ApiMethod,$ApiUrl,$ETLCode,$ETLCodeError,$isFlatten,$isMaskError,$args);
+        return self::RemoteRESTApiRequest($request,$ApiName,$ApiMethod,$ApiUrl,$ETLCode,$ETLCodeError,$isFlatten,$isMaskError,$args,$overrides);
       } else {
-        return self::RemoteSOAPApiRequest($request,$ApiName,$ApiMethod,$ApiUrl,$ETLCode,$ETLCodeError,$isFlatten,$isMaskError,$args);
+        return self::RemoteSOAPApiRequest($request,$ApiName,$ApiMethod,$ApiUrl,$ETLCode,$ETLCodeError,$isFlatten,$isMaskError,$args,$overrides);
       }
     }
 
-    public static function RemoteRESTApiRequest(Request $request,$ApiName,$ApiMethod,$ApiUrl,$ETLCode,$ETLCodeError,$isFlatten,$isMaskError,$args) {
+    public static function RemoteRESTApiRequest(Request $request,$ApiName,$ApiMethod,$ApiUrl,$ETLCode,$ETLCodeError,$isFlatten,$isMaskError,$args,$overrides=null) {
       $success = true;
       $errorTexts = [];
       $returnModels = [];
@@ -52,17 +52,23 @@ class ApiController extends Controller
         $requestData['headers']['Content-Type'] = "application/x-www-form-urlencoded";
       }
 
+      if ($overrides) {
+        foreach($overrides as $key=>$override) {
+          data_set($requestData['json'],'data.'.$key,$override);
+          if (isset($requestData['json'][$key])) $requestData['json'][$key] = $override;
+          if (isset($requestData['query'][$key])) $requestData['query'][$key] = $override;
+        }
+      }
+
       $client = new \GuzzleHttp\Client();
       $httpResponseCode = '';
-      $httpResponseReason = '';
       if ($ApiMethod != null && $ApiUrl != null) {
         try {
 
           $res = $client->request($ApiMethod,$ApiUrl,$requestData);
-          Log::info('Calling '.$ApiName.' ('.$ApiMethod.' '.$ApiUrl.')',["RequestData"=>$requestData]);
+          Log::debug('Calling '.$ApiName.' ('.$ApiMethod.' '.$ApiUrl.')',["RequestData"=>$requestData]);
 
           $httpResponseCode = $res->getStatusCode();
-          $httpResponseReason = $res->getReasonPhrase();
           if ($httpResponseCode!==200) {
             $success = false;
             array_push($errorTexts,['errorText'=>$res->getBody(),'errorType'=>2]);
@@ -102,10 +108,8 @@ class ApiController extends Controller
           $response = $e->getResponse();
           if ($response) {
             $httpResponseCode = $response->getStatusCode();
-            $httpResponseReason = $response->getReasonPhrase();
           } else {
             $httpResponseCode = 500;
-            $httpResponseReason = $e->getMessage();
           }
 
           $success = false;
@@ -113,7 +117,6 @@ class ApiController extends Controller
 
           if ($isMaskError) {
             $httpResponseCode = 500;
-            $httpResponseReason = 'Internal Server Error';
             $errorTexts = [
               [
                 'errorText' => 'Internal Server Error',
@@ -140,7 +143,7 @@ class ApiController extends Controller
 
       if ($isFlatten) JsonResource::withoutWrapping();
 
-      if ($returnModels instanceof Illuminate\Database\Eloquent\Collection) {
+      if ($returnModels instanceof \Illuminate\Database\Eloquent\Collection) {
         if (!$isFlatten) return new ExtendedResourceCollection($returnModels,$success,$errorTexts);
         else return new \Illuminate\Http\Resources\Json\ResourceCollection($returnModels);
       } else {
@@ -159,7 +162,7 @@ class ApiController extends Controller
       $cacheKey = $ApiName.'#'.$CallDataHash;
 
       if ($cache && Cache::has($cacheKey)) {
-        log::info('retrieve data from cache');
+        log::debug('retrieve data from cache - '.$cacheKey,$CallData);
         return Cache::get($cacheKey);
       }
 
@@ -196,14 +199,13 @@ class ApiController extends Controller
 
         $client = new \GuzzleHttp\Client();
         $httpResponseCode = '';
-        $httpResponseReason = '';
 
         try {
 
           $res = $client->request($apiMethod,$ApiUrl,$requestData);
+          Log::debug('Calling '.$ApiName.' ('.$apiMethod.' '.$ApiUrl.')',["RequestData"=>$requestData]);
 
           $httpResponseCode = $res->getStatusCode();
-          $httpResponseReason = $res->getReasonPhrase();
           if ($httpResponseCode!==200) {
             $success = false;
             array_push($errorTexts,['errorText'=>$res->getBody(),'errorType'=>2]);
@@ -242,7 +244,7 @@ class ApiController extends Controller
       return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
     }
 
-    public static function RemoteSOAPApiRequest(Request $request,$ApiName,$ApiMethod,$ApiUrl,$ETLCode,$ETLCodeError,$isFlatten,$isMaskError,$args) {
+    public static function RemoteSOAPApiRequest(Request $request,$ApiName,$ApiMethod,$ApiUrl,$ETLCode,$ETLCodeError,$isFlatten,$isMaskError,$args,$overrides=null) {
       $success = true;
       $errorTexts = [];
       $returnModels = [];
@@ -261,6 +263,12 @@ class ApiController extends Controller
         }
 
         $CallData = array_merge($CallData,$args);
+
+        if ($overrides) {
+          foreach($overrides as $key=>$override) {
+            if (isset($CallData[$key])) $CallData[$key] = $override;
+          }
+        }
 
         $result = self::RemoteSOAPApiRaw($ApiUrl,$ApiMethod,$CallData,$ETLCode,$ETLCodeError);
 
@@ -287,7 +295,7 @@ class ApiController extends Controller
 
       if ($isFlatten) JsonResource::withoutWrapping();
 
-      if ($returnModels instanceof Illuminate\Database\Eloquent\Collection) {
+      if ($returnModels instanceof \Illuminate\Database\Eloquent\Collection) {
         if (!$isFlatten) return new ExtendedResourceCollection($returnModels,$success,$errorTexts);
         else return new ResourceCollection($returnModels);
       } else {
@@ -306,7 +314,7 @@ class ApiController extends Controller
       $cacheKey = $ApiName.'#'.$CallDataHash;
 
       if ($cache && Cache::has($cacheKey)) {
-        log::info('retrieve data from cache');
+        log::debug('retrieve data from cache - '.$cacheKey,$CallData);
         return Cache::get($cacheKey);
       }
 
@@ -335,7 +343,7 @@ class ApiController extends Controller
       $cacheKey = $ApiUrl.'#'.$functionName.'#'.$CallDataHash;
 
       if ($cache && Cache::has($cacheKey)) {
-        log::info('retrieve data from cache');
+        log::debug('retrieve data from cache - '.$cacheKey,$CallData);
         return Cache::get($cacheKey);
       }
 
@@ -347,6 +355,8 @@ class ApiController extends Controller
           'user_agent' => 'Mozilla/1.0N (Windows)'
         ]);
       try {
+        Log::debug('Calling '.$ApiUrl.' ('.$functionName.')',["CallData"=>$CallData]);
+
         $client->__setLocation($ApiUrl);
         $ApiData = $client->__soapCall($functionName,$CallData);
         if (is_object($ApiData) && isset($ApiData->return)) $ApiData = $ApiData->return;
@@ -381,6 +391,44 @@ class ApiController extends Controller
       }
       
       return ["success" => $success, "errorTexts" => $errorTexts, "returnModels" => $returnModels];
+    }
+
+    public static function wildcardRequest(Request $request,$path,$overrides=null) {
+      $api = strval(config('generic-api.api-model'))::where('apiRoute','regexp',self::pathToQuery($path))->where('apiMethod',$request->method())->first();
+      if ($api) {
+        $param = self::pathParameters($path,$api->apiRoute,$overrides);
+        $apiMethod = (!empty($api->sourceApiMethod)) ? $api->sourceApiMethod : $api->ApiMethod;
+        return self::RemoteApiRequest($request,$api->apiName,$apiMethod,$api->sourceApiUrl,$api->ETLCode,$api->ETLCodeError,$api->isFlatten,$api->isMaskError,$param,$overrides);
+      } else {
+        return response("API Endpoint not found",404);
+      }
+    }
+
+    public static function pathToQuery($path) {
+      $pathArray = [];
+      $pathSplits = explode('/',trim(trim($path),'/'));
+      foreach ($pathSplits as $pathSplit) {
+        $pathArray[] = '('.$pathSplit.'|'.'\\{[[:alnum:]]+\\}'.')';
+      }
+
+      return '^\/?'.implode("\/",$pathArray).'\/?$';
+    }
+
+    public static function pathParameters($path,$pattern,$overrides=null) {
+      $returnParam = [];
+
+      $patternSplits = explode('/',trim(trim($pattern),'/'));
+      $pathSplits = explode('/',trim(trim($path),'/'));
+
+      foreach ($patternSplits as $key=>$patternSplit) {
+        $param = rtrim(ltrim($patternSplit,'{'),'}');
+        if ($param != $patternSplit) {
+          if ($overrides && isset($override[$param])) $returnParam[$param] = $override[$param];
+          else $returnParam[$param] = $pathSplits[$key];
+        }
+      }
+
+      return $returnParam;
     }
 
     public static function version() {

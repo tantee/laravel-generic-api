@@ -51,7 +51,7 @@ class LaravelGenericApi
     public static function routesWrapper($prefix = 'wrapper', $middleware = null) {
       Route::prefix($prefix)->middleware(Arr::wrap($middleware))->group(function () {
         try {
-          $apis = config('generic-api.api-model')::all();
+          $apis = strval(config('generic-api.api-model'))::all();
           foreach($apis as $api) {
             Route::match([$api->apiMethod],ltrim($api->apiRoute,'/'),function(Request $request) use ($api) {
               $args = func_get_args();
@@ -63,5 +63,11 @@ class LaravelGenericApi
         } catch (\Exception $e) {
         }
       });
+    }
+
+    public static function routesWrapperWildcard($prefix = 'wrapper', $middleware = null) {
+        Route::prefix($prefix)->middleware(Arr::wrap($middleware))->group(function () {
+          Route::any('{path}',[ApiController::class,'wildcardRequest'])->where('path','.*'); 
+        });
     }
 }
