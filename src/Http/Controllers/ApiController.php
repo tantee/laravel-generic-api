@@ -28,8 +28,10 @@ class ApiController extends Controller
       $errorTexts = [];
       $returnModels = [];
 
+      $argsKey = array_keys($args);
       for($i=0;$i<count($args);$i++) {
-        $ApiUrl = str_replace('{'.($i+1).'}',$args[$i],$ApiUrl);
+        $ApiUrl = str_replace('{'.($i+1).'}',$args[$argsKey[$i]],$ApiUrl);
+        if ('{'.($i+1).'}' != '{'.$argsKey[$i].'}') $ApiUrl = str_replace('{'.$argsKey[$i].'}',$args[$argsKey[$i]],$ApiUrl);
       }
 
       $requestData = [
@@ -182,6 +184,7 @@ class ApiController extends Controller
           $keys = array_keys($CallData);
           for($i=0;$i<count($keys);$i++) {
             $ApiUrl = str_replace('{'.($i+1).'}',$CallData[$keys[$i]],$ApiUrl);
+            if ('{'.($i+1).'}' != '{'.$keys[$i].'}') $ApiUrl = str_replace('{'.$keys[$i].'}',$CallData[$keys[$i]],$ApiUrl);
           }
         }
         
