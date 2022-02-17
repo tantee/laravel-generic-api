@@ -426,7 +426,7 @@ class ApiController extends Controller
       foreach ($patternSplits as $key=>$patternSplit) {
         $param = rtrim(ltrim($patternSplit,'{'),'}');
         if ($param != $patternSplit) {
-          if ($overrides && isset($override[$param])) $returnParam[$param] = $override[$param];
+          if ($overrides && isset($overrides[$param])) $returnParam[$param] = $overrides[$param];
           else $returnParam[$param] = $pathSplits[$key];
         }
       }
