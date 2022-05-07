@@ -5,6 +5,8 @@ namespace TaNteE\LaravelGenericApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use TaNteE\LaravelGenericApi\Http\Controllers\ApiController;
 use TaNteE\LaravelGenericApi\Http\Controllers\GenericAPIController;
 use TaNteE\LaravelGenericApi\Http\Resources\ExtendedResource;
@@ -51,7 +53,9 @@ class LaravelGenericApi
     public static function routesWrapper($prefix = 'wrapper', $middleware = null) {
       Route::prefix($prefix)->middleware(Arr::wrap($middleware))->group(function () {
         try {
-          $apis = strval(config('generic-api.api-model'))::all();
+          $apis = Cache::store('file')->remember('api_wrapper_route', 60*5 , function () {
+                        return strval(config('generic-api.api-model'))::all();
+                    });
           foreach($apis as $api) {
             Route::match([$api->apiMethod],ltrim($api->apiRoute,'/'),function(Request $request) use ($api) {
               $args = func_get_args();
@@ -66,8 +70,12 @@ class LaravelGenericApi
     }
 
     public static function routesWrapperWildcard($prefix = 'wrapper', $middleware = null) {
-        Route::prefix($prefix)->middleware(Arr::wrap($middleware))->group(function () {
-          Route::any('{path}',[ApiController::class,'wildcardRequest'])->where('path','.*'); 
-        });
+        if (DB::Connection()->getDriverName()=="mysql") {
+            Route::prefix($prefix)->middleware(Arr::wrap($middleware))->group(function () {
+              Route::any('{path}',[ApiController::class,'wildcardRequest'])->where('path','.*'); 
+            });
+        } else {
+            self::routesWrapper($prefix,$middleware);
+        }   
     }
 }
