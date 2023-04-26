@@ -85,7 +85,7 @@ class ApiController extends Controller
             $ApiData = json_decode((String)$res->getBody(),true);
             if ($ApiData != null) {
               $success = Arr::pull($ApiData,'success',$success);
-              $errorTexts = Arr::pull($ApiData,'errorTexts',$errorTexts);
+              $errorTexts = Arr::wrap(Arr::pull($ApiData,'errorTexts',$errorTexts));
             }
 
             if ($isMaskError) {
